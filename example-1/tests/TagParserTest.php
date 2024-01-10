@@ -7,48 +7,66 @@ use PHPUnit\Framework\TestCase;
 
 class TagParserTest extends TestCase
 {
-    public function test_it_parses_a_single_tag()
+    /**
+     * @dataProvider tagsProvider
+     */
+    public function test_it_parses_tags($input, $expected)
     {
         $parser = new TagParser;
-
-        $result = $parser->parse('personal');
-        $expected = ['personal'];
+        $result = $parser->parse($input);
 
         $this->assertSame($expected, $result);
     }
 
-    public function test_it_parses_a_comma_seperated_list_of_tag()
+    public static function tagsProvider()
     {
-        $parser = new TagParser;
-
-        $result = $parser->parse('personal, money, family');
-        $expected = ['personal', 'money', 'family'];
-
-        $this->assertSame($expected, $result);
+        return [
+            ['personal', ['personal']],
+            ['personal, money, family', ['personal', 'money', 'family']],
+            ['personal | money | family', ['personal', 'money', 'family']],
+            ['personal|money|family', ['personal', 'money', 'family']],
+            ['personal!money!family', ['personal', 'money', 'family']],
+        ];
     }
 
-    public function test_spaces_are_optionals()
-    {
-        $parser = new TagParser;
+    // public function test_it_parses_a_single_tag()
+    // {
 
-        $result = $parser->parse('personal,money,family');
-        $expected = ['personal', 'money', 'family'];
+    //     $result = $this->parser->parse('personal');
+    //     $expected = ['personal'];
 
-        $this->assertSame($expected, $result);
+    //     $this->assertSame($expected, $result);
+    // }
 
-        $result = $parser->parse('personal|money|family');
-        $expected = ['personal', 'money', 'family'];
+    // public function test_it_parses_a_comma_seperated_list_of_tag()
+    // {
 
-        $this->assertSame($expected, $result);
-    }
+    //     $result = $this->parser->parse('personal, money, family');
+    //     $expected = ['personal', 'money', 'family'];
 
-    public function test_it_parses_a_pipe_seperated_list_of_tag()
-    {
-        $parser = new TagParser;
+    //     $this->assertSame($expected, $result);
+    // }
 
-        $result = $parser->parse('personal | money | family');
-        $expected = ['personal', 'money', 'family'];
+    // public function test_spaces_are_optionals()
+    // {
 
-        $this->assertSame($expected, $result);
-    }
+    //     $result = $this->parser->parse('personal,money,family');
+    //     $expected = ['personal', 'money', 'family'];
+
+    //     $this->assertSame($expected, $result);
+
+    //     $result = $this->parser->parse('personal|money|family');
+    //     $expected = ['personal', 'money', 'family'];
+
+    //     $this->assertSame($expected, $result);
+    // }
+
+    // public function test_it_parses_a_pipe_seperated_list_of_tag()
+    // {
+
+    //     $result = $this->parser->parse('personal | money | family');
+    //     $expected = ['personal', 'money', 'family'];
+
+    //     $this->assertSame($expected, $result);
+    // }
 }
