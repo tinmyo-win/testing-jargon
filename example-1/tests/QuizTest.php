@@ -52,20 +52,22 @@ class QuizTest extends TestCase
     {
         $quiz = new Quiz;
 
+        $quiz->addQuestion($question1 = new Question('What is 2 + 2?', 4));
+        $quiz->addQuestion($question2 = new Question('What is 3 * 2?', 6));
+
+        $this->assertEquals($question1, $quiz->nextQuestion());
+        $this->assertEquals($question2, $quiz->nextQuestion());
+    }
+
+    /** @test */
+    public function it_returns_false_if_there_are_no_remaining_next_question()
+    {
+        $quiz = new Quiz;
+
         $quiz->addQuestion(new Question('What is 2 + 2?', 4));
-        $quiz->addQuestion(new Question('What is 3 * 2?', 6));
-        $quiz->addQuestion(new Question('What is 5 * 2?', 10));
 
-        $question = $quiz->nextQuestion();
-        $question->answer(4);
-
-        $question = $quiz->nextQuestion();
-        $question->answer(6);
-
-        $question = $quiz->nextQuestion();
-        $question->answer(10);
-
-        $this->assertEquals(100, $quiz->grade());
+        $quiz->nextQuestion();
+        $this->assertFalse($quiz->nextQuestion());
     }
 
     /** @test */
@@ -76,16 +78,23 @@ class QuizTest extends TestCase
         $quiz = new Quiz;
 
         $quiz->addQuestion(new Question('What is 2 + 2?', 4));
-        $quiz->addQuestion(new Question('What is 3 * 2?', 6));
-        $quiz->addQuestion(new Question('What is 5 * 2?', 10));
 
-        $question = $quiz->nextQuestion();
-        $question->answer('incorrect answer');
-
-        $question = $quiz->nextQuestion();
-        $question->answer(6);
 
         $quiz->grade();
 
+    }
+
+    /** @test */
+    public function it_knows_if_it_is_complete()
+    {
+        $quiz = new Quiz;
+
+        $quiz->addQuestion(new Question('What is 2 + 2?', 4));
+
+        $this->assertFalse($quiz->isComplete());
+        
+        $quiz->nextQuestion()->answer(4);
+
+        $this->assertTrue($quiz->isComplete());
     }
 }

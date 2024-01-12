@@ -6,13 +6,18 @@ use Exception;
 
 class Quiz
 {
-    protected $questions = [];
+    protected Questions $questions;
+
+    public function __construct()
+    {
+        $this->questions = new Questions();
+    }
 
     protected $current_question_key = 0;
 
     public function addQuestion(Question $question)
     {
-        $this->questions[] = $question;
+        $this->questions->add($question);
     }
 
     public function questions()
@@ -22,27 +27,30 @@ class Quiz
 
     public function nextQuestion()
     {
-        return $this->questions[$this->current_question_key++];
+        return $this->questions->next();
+        // if(!isset($this->questions[$this->current_question_key])) {
+        //     return false;
+        // }
+        
+        // return $this->questions[$this->current_question_key++];
+    }
+
+    public function isComplete()
+    {
+        $answeredQuestions = count($this->questions->answered());
+        $totalQuestions = $this->questions->count();
+
+        return $totalQuestions === $answeredQuestions;
     }
 
     public function grade()
     {
-        $is_complete = count($this->questions) === $this->current_question_key;
-
-        if(!$is_complete)
-        {
+        if (!$this->isComplete()) {
             throw new Exception('Cannot get grade before complete the quiz');
         }
-        
-        $correct = count($this->corerctlyAnsweredQuestions());
 
-        return ($correct / count($this->questions)) * 100;
-    }
+        $correct = count($this->questions->solved());
 
-    protected function corerctlyAnsweredQuestions()
-    {
-        return array_filter($this->questions, function ($question) {
-            return $question->solved();
-        });
+        return ($correct / $this->questions->count()) * 100;
     }
 }
